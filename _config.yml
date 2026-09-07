@@ -1,0 +1,8 @@
+title: "cinestudio"
+description: "cinestudio is a state-of-the-art, multi-agent AI framework designed to automate the entire advertising lifecycle."
+theme: minima
+logo: /assets/logo.svg
+show_downloads: false
+permalink: /:title/
+plugins:
+  - jekyll-feed
