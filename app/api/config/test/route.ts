@@ -4,6 +4,7 @@ import { resolveAndAssertSafe, SSRFBlockedError } from '@/src/lib/ssrf';
 import { ConfigTestRequestSchema, CinestudioConfigSchema } from '@/src/lib/validation';
 import type { CinestudioConfig } from '@/src/types';
 import { logger } from '@/src/lib/logger';
+import { isSecretConfigured } from '@/src/lib/secrets';
 import { MINIMAX_BASE_URL } from '@/src/providers/minimax/constants';
 
 export const dynamic = 'force-dynamic';
@@ -116,6 +117,17 @@ export async function POST(request: NextRequest) {
     log.info('config_test_run', { count: body.providers.length, ok: results.filter((r) => r.ok).length });
 
     if (body.save && body.config) {
+      if (!isSecretConfigured()) {
+        return NextResponse.json(
+          {
+            error:
+              'CINESTUDIO_SECRET required to persist config. ' +
+              'Set the env var (>=32 bytes) before saving API keys. ' +
+              'See docs/DEPLOY.md.',
+          },
+          { status: 400 },
+        );
+      }
       const cfgCheck = CinestudioConfigSchema.safeParse(body.config);
       if (!cfgCheck.success) {
         return NextResponse.json(
