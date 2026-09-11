@@ -108,6 +108,28 @@ function readOptional<T>(app: StateStore, key: string): T | undefined {
   return app.get(key) as T | undefined;
 }
 
+function readPredecessorStatuses(
+  runId: string,
+): { agentId: string; status: 'pending' | 'running' | 'done' | 'failed' }[] {
+  try {
+    const { listAgentStatesForRun } = require('@/src/db/agent-state') as typeof import('@/src/db/agent-state');
+    const rows = listAgentStatesForRun(runId);
+    if (rows.length === 0) return [];
+    return rows.map((r) => ({
+      agentId: r.agentId,
+      status: (r.state === 'done'
+        ? 'done'
+        : r.state === 'failed'
+          ? 'failed'
+          : r.state === 'running'
+            ? 'running'
+            : 'pending') as 'pending' | 'running' | 'done' | 'failed',
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export function buildAgentNodes(cfg: CinestudioConfig) {
   const t = cfg.textProvider;
 
@@ -222,23 +244,34 @@ export function buildAgentNodes(cfg: CinestudioConfig) {
     id: 'production_coordinator',
     description: 'Production Coordinator.',
     runId: '',
-    invoke: async (_state, app) =>
-      invokeProductionCoordinator(t, {
-        agentStatuses: [
-          { agentId: 'showrunner', status: 'done' },
-          { agentId: 'style_guide', status: 'done' },
-          { agentId: 'character_designer', status: 'done' },
-          { agentId: 'world_builder', status: 'done' },
-          { agentId: 'script_writer', status: 'done' },
-          { agentId: 'shot_planner', status: 'done' },
-          { agentId: 'continuity_supervisor', status: 'done' },
-          { agentId: 'scoring', status: 'done' },
-        ],
-        unresolved: read<ContinuityIssue[]>(app, 'continuityIssues').map((c) => ({
-          kind: c.kind,
-          message: c.message,
-        })),
-      }),
+    invoke: async (_state, app) => {
+      const runId = (app.get('runId') as string | undefined) ?? '';
+      const persistedStatuses = runId ? readPredecessorStatuses(runId) : [];
+      const agentStatuses =
+        persistedStatuses.length > 0
+          ? persistedStatuses
+          : [
+              { agentId: 'showrunner', status: 'done' as const },
+              { agentId: 'style_guide', status: 'done' as const },
+              { agentId: 'character_designer', status: 'done' as const },
+              { agentId: 'world_builder', status: 'done' as const },
+              { agentId: 'script_writer', status: 'done' as const },
+              { agentId: 'shot_planner', status: 'done' as const },
+              { agentId: 'continuity_supervisor', status: 'done' as const },
+              { agentId: 'scoring', status: 'done' as const },
+            ];
+      return invokeProductionCoordinator(
+        t,
+        {
+          agentStatuses,
+          unresolved: read<ContinuityIssue[]>(app, 'continuityIssues').map((c) => ({
+            kind: c.kind,
+            message: c.message,
+          })),
+        },
+        runId,
+      );
+    },
     persistKey: 'coordinatorReport',
   });
 

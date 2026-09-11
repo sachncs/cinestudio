@@ -212,7 +212,7 @@ vi.mock('@/src/stream/sinks', () => ({
 
 import { buildCinestudioGraph } from '@/src/graph/cinestudio';
 import { DEFAULT_CONFIG } from '@/src/types';
-import { resetDbForTesting } from '@/src/db/client';
+import { resetDbForTesting, getDb } from '@/src/db/client';
 
 const FAKE_CONFIG = {
   ...DEFAULT_CONFIG,
@@ -225,9 +225,20 @@ const FAKE_CONFIG = {
   },
 };
 
+function ensureRun(runId: string) {
+  const db = getDb();
+  const now = new Date().toISOString();
+  db.prepare(
+    `INSERT OR IGNORE INTO runs (id, status, prompt, production_id, created_at, updated_at, artifacts_json)
+     VALUES (?, 'running', ?, NULL, ?, ?, '[]')`,
+  ).run(runId, 'test prompt', now, now);
+}
+
 describe('buildCinestudioGraph - end-to-end pipeline', () => {
   beforeEach(() => {
     resetDbForTesting();
+    ensureRun('test-run-id');
+    ensureRun('test-run-2');
     emitMock.mockClear();
     emitAgentOutputMock.mockClear();
   });
