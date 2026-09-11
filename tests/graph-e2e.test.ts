@@ -201,15 +201,6 @@ vi.mock('@/src/agents/voice-casting', () => ({ invokeVoiceCasting: vi.fn(async (
 vi.mock('@/src/agents/distribution', () => ({ invokeDistribution: vi.fn(async () => MOCK_DIST) }));
 vi.mock('@/src/agents/rights-clearance', () => ({ invokeRightsClearance: vi.fn(async () => MOCK_RIGHTS) }));
 
-vi.mock('@/src/providers/factory', () => ({
-  buildModel: vi.fn(() => ({
-    config: { modelId: 'mock-model' },
-    stream: vi.fn(async function* () {
-      // dummy stream that yields nothing — invoke() is short-circuited
-    }),
-  })),
-}));
-
 const { emitMock, emitAgentOutputMock } = vi.hoisted(() => ({
   emitMock: vi.fn(),
   emitAgentOutputMock: vi.fn(),
