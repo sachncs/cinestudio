@@ -1,10 +1,13 @@
 # cinestudio — Multi-agent AI film rendering platform
 
-Production-centric, deep editorial noir, MiniMax-first.
+[![CI](https://img.shields.io/github/actions/workflow/status/sachncs/cinestudio/ci.yml?branch=master&label=ci)](https://github.com/sachncs/cinestudio/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-black)](CHANGELOG.md)
+[![Node](https://img.shields.io/badge/node-%E2%89%A526-339933)](https://nodejs.org)
 
-A Story Analyst, Character Designer, Costume Designer, Environment Designer, Script Writer, Scene Composer, Shot Planner, Continuity Supervisor, Transition Designer, Pacing Analyst, Visual Quality Reviewer, Render Dispatcher, Production Coordinator, plus Editor / Colorist / Composer / Sound / Voice / Scoring / Critique — coordinated by a Strands **Graph**, with a **Swarm** for the Story ↔ Character ↔ Costume ↔ Environment collaboration, and a **Workflow** for per-shot production revisions.
+Generate a 30-second to 20-minute film from a single prompt — brief, script, storyboard, render, score, color, distribution — coordinated by a 20-agent production crew.
 
-The default backend is MiniMax (`MiniMax-M3` text, `MiniMax-H3` video, `image-01`, `speech-2.8-hd`, `music-3.0`). One API key covers every modality end-to-end.
+**Default backend:** MiniMax (text, video, image, speech, music in one key). See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full provider catalogue.
 
 ## Production-first
 
@@ -14,7 +17,7 @@ Every story is a **Production** — the central object. Characters, Wardrobe, Lo
 
 ```bash
 pnpm install
-pnpm db:migrate    # applies migrations 005–019 (productions, characters, locations, scenes, shots, transitions, continuity_log, knowledge, knowledge_fts, assets, asset_tags, asset_collections, asset_collection_items, comments, versions, copilot_threads, copilot_messages, team_members, invites, acl)
+pnpm db:migrate    # applies the base schema (productions, characters, locations, scenes, shots, transitions, continuity_log, knowledge, knowledge_fts, assets, asset_tags, asset_collections, asset_collection_items, comments, versions, copilot_threads, copilot_messages, team_members, invites, acl)
 pnpm dev           # http://localhost:3000
 ```
 
