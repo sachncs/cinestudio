@@ -95,6 +95,7 @@ import {
 } from '@/src/agents/production-coordinator';
 import { invokeCinematographer, type CinematographyPlan } from '@/src/agents/cinematographer';
 import { invokeSceneEditor, type SceneRevisions } from '@/src/agents/scene-editor';
+import { listAgentStatesForRun } from '@/src/db/agent-state';
 
 function read<T>(app: StateStore, key: string): T {
   const v = app.get(key);
@@ -112,7 +113,6 @@ function readPredecessorStatuses(
   runId: string,
 ): { agentId: string; status: 'pending' | 'running' | 'done' | 'failed' }[] {
   try {
-    const { listAgentStatesForRun } = require('@/src/db/agent-state') as typeof import('@/src/db/agent-state');
     const rows = listAgentStatesForRun(runId);
     if (rows.length === 0) return [];
     return rows.map((r) => ({
