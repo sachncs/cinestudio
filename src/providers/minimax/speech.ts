@@ -2,6 +2,7 @@ import path from 'node:path';
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { logger } from '@/src/lib/logger';
 import { authHeaders, miniMaxFetch, MiniMaxError, readNumberField, readStringField } from './shared';
+import { MINIMAX_BASE_URL, MINIMAX_SPEECH_MODEL } from './constants';
 
 const log = logger('providers/minimax/speech');
 
@@ -35,8 +36,8 @@ export async function synthesizeWithMiniMaxSpeech(
   cfg: MiniMaxSpeechConfig,
   input: MiniMaxSpeechInput,
 ): Promise<MiniMaxSpeechResult> {
-  const baseUrl = (cfg.baseUrl ?? 'https://api.minimax.io').replace(/\/+$/, '');
-  const model = cfg.model ?? 'speech-2.8-hd';
+  const baseUrl = (cfg.baseUrl ?? MINIMAX_BASE_URL).replace(/\/+$/, '');
+  const model = cfg.model ?? MINIMAX_SPEECH_MODEL;
 
   try {
     log.info('minimax_tts_invoking', { artifactId: input.artifactId, model, voiceId: input.voiceId ?? 'English_expressive_narrator' });

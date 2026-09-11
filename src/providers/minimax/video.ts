@@ -8,10 +8,11 @@ import { logger } from '@/src/lib/logger';
 import { sanitizePathSegment } from '@/src/lib/path';
 import { authHeaders, miniMaxFetch, MiniMaxError, readStringField } from './shared';
 import { uploadMiniMaxFile } from './files';
+import { MINIMAX_BASE_URL, MINIMAX_VIDEO_MODEL } from './constants';
 
 const log = logger('providers/minimax/video');
 
-const DEFAULT_BASE_URL = 'https://api.minimax.io';
+const DEFAULT_BASE_URL = MINIMAX_BASE_URL;
 
 export interface MiniMaxVideoConfig {
   apiKey: string;
@@ -199,13 +200,13 @@ export async function renderWithMiniMaxVideo(
       taskId: '',
       videoUrl: null,
       status: 'failed',
-      model: cfg.model ?? 'MiniMax-H3',
+      model: cfg.model ?? MINIMAX_VIDEO_MODEL,
       error: 'MiniMax API key not set',
     };
   }
 
   const baseUrl = (cfg.baseUrl ?? DEFAULT_BASE_URL).replace(/\/+$/, '');
-  const model = cfg.model ?? 'MiniMax-H3';
+  const model = cfg.model ?? MINIMAX_VIDEO_MODEL;
   const mode = detectMode(shot);
   const ratio = clampRatio(shot.ratio, mode);
   const duration = clampDuration(shot.duration);

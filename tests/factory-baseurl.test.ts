@@ -2,7 +2,14 @@ import { describe, it, expect } from 'vitest';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 
-describe('MiniMax providers reference api.minimax.io', () => {
+describe('MiniMax provider constants are centralised', () => {
+  const constantsPath = path.resolve(process.cwd(), 'src/providers/minimax/constants.ts');
+  const constantsSrc = readFileSync(constantsPath, 'utf8');
+
+  it('constants.ts declares the base URL', () => {
+    expect(constantsSrc).toMatch(/MINIMAX_BASE_URL\s*=\s*['"]https:\/\/api\.minimax\.io['"]/);
+  });
+
   const providers = [
     'src/providers/minimax/text.ts',
     'src/providers/minimax/image.ts',
@@ -14,11 +21,14 @@ describe('MiniMax providers reference api.minimax.io', () => {
 
   for (const p of providers) {
     const src = readFileSync(path.resolve(process.cwd(), p), 'utf8');
-    it(`${p} does not reference api.minimax.chat`, () => {
+    it(`${p} does not hardcode api.minimax.chat`, () => {
       expect(src).not.toMatch(/api\.minimax\.chat/);
     });
-    it(`${p} references api.minimax.io`, () => {
-      expect(src).toMatch(/api\.minimax\.io/);
+    it(`${p} does not hardcode api.minimax.io (uses constants)`, () => {
+      expect(src).not.toMatch(/api\.minimax\.io/);
+    });
+    it(`${p} imports from ./constants`, () => {
+      expect(src).toMatch(/from\s+['"]\.\/constants['"]/);
     });
   }
 
