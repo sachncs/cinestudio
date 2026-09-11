@@ -1,4 +1,10 @@
 import { timingSafeEqual } from 'node:crypto';
+import {
+  createSession,
+  isSessionValid,
+  revokeSession,
+  touchSession,
+} from '@/src/lib/sessions';
 
 const COOKIE_NAME = 'cinestudio_session';
 
@@ -23,6 +29,31 @@ export function checkToken(submitted: string): boolean {
   const configured = getToken();
   if (!configured) return false;
   return safeEqual(submitted, configured);
+}
+
+export function issueSession(value: string, userAgent: string | null = null): string {
+  const session = createSession(userAgent);
+  return `${value}.${session.id}`;
+}
+
+export function verifySession(cookieValue: string | undefined): boolean {
+  if (!cookieValue) return false;
+  const dot = cookieValue.lastIndexOf('.');
+  if (dot < 0) return false;
+  const token = cookieValue.slice(0, dot);
+  const sessionId = cookieValue.slice(dot + 1);
+  if (!checkToken(token)) return false;
+  if (!isSessionValid(sessionId)) return false;
+  touchSession(sessionId);
+  return true;
+}
+
+export function logoutSession(cookieValue: string | undefined): void {
+  if (!cookieValue) return;
+  const dot = cookieValue.lastIndexOf('.');
+  if (dot < 0) return;
+  const sessionId = cookieValue.slice(dot + 1);
+  revokeSession(sessionId);
 }
 
 export function buildCookieHeader(value: string): string {

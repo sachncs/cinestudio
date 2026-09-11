@@ -43,12 +43,11 @@ function deriveKey(): Buffer {
     );
   }
   if (process.env.NODE_ENV === 'production') {
-    const epochMarker = `${SALT_VERSION}.${ROTATION_HINT}`;
-    if (cachedKey && cachedKeyEpoch === epochMarker) return cachedKey;
+    if (cachedKey) return cachedKey;
   }
   const salt = loadOrCreateSalt();
   cachedKey = scryptSync(secret, salt, KEY_LEN);
-  cachedKeyEpoch = `${SALT_VERSION}`;
+  cachedKeyEpoch = Date.now();
   return cachedKey;
 }
 
