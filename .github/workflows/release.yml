@@ -22,5 +22,30 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm build
-      - name: Tag triggered — see CHANGELOG.md
-        run: echo "Release tagged. Add CHANGELOG entries manually."
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Extract changelog section
+        id: changelog
+        run: |
+          python3 - <<'PY'
+          import re, os, pathlib
+          text = pathlib.Path('CHANGELOG.md').read_text()
+          tag = os.environ['GITHUB_REF_NAME']
+          pattern = rf'## \[{re.escape(tag[1:])}\][^\n]*\n([\s\S]*?)(?=\n## |\Z)'
+          m = re.search(pattern, text)
+          body = m.group(1).strip() if m else f'Release {tag}'
+          pathlib.Path('release-notes.md').write_text(body)
+          PY
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release-notes.md
+          generate_release_notes: true
