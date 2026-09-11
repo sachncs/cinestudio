@@ -20,9 +20,55 @@ export interface StartRunResult {
 const inflight = new Map<string, Promise<unknown>>();
 const abortControllers = new Map<string, AbortController>();
 
+const RATE_WINDOW_MS = 60_000;
+const RATE_MAX_STARTS = 5;
+const recentStartTimestamps: number[] = [];
+
+export class ConcurrencyCapExceededError extends Error {
+  constructor(public readonly cap: number) {
+    super(`Max concurrent runs cap of ${cap} reached`);
+    this.name = 'ConcurrencyCapExceededError';
+  }
+}
+
+export class RunRateLimitExceededError extends Error {
+  constructor(public readonly retryAfterSeconds: number) {
+    super(`Run start rate limit exceeded; retry after ${retryAfterSeconds}s`);
+    this.name = 'RunRateLimitExceededError';
+  }
+}
+
+function checkRateLimit(now: number): void {
+  while (recentStartTimestamps.length > 0 && now - recentStartTimestamps[0]! > RATE_WINDOW_MS) {
+    recentStartTimestamps.shift();
+  }
+  if (recentStartTimestamps.length >= RATE_MAX_STARTS) {
+    const oldest = recentStartTimestamps[0]!;
+    const retryAfter = Math.max(1, Math.ceil((RATE_WINDOW_MS - (now - oldest)) / 1000));
+    throw new RunRateLimitExceededError(retryAfter);
+  }
+}
+
+export function getMaxConcurrentCap(): number {
+  const raw = process.env.CINESTUDIO_MAX_CONCURRENT_RUNS;
+  const n = raw ? Number(raw) : 3;
+  return Number.isFinite(n) && n > 0 ? Math.floor(n) : 3;
+}
+
+export function getInflightCount(): number {
+  return inflight.size;
+}
+
 export function startRun(input: StartRunInput): StartRunResult {
   if (!input.productionId) {
     throw new Error('productionId is required to start a run.');
+  }
+  const now = Date.now();
+  if (!input.runIdForResume) {
+    checkRateLimit(now);
+  }
+  if (inflight.size >= getMaxConcurrentCap()) {
+    throw new ConcurrencyCapExceededError(getMaxConcurrentCap());
   }
   let runId: string;
   let prompt: string;
@@ -39,6 +85,7 @@ export function startRun(input: StartRunInput): StartRunResult {
     }
     runId = createRun(input.prompt, input.productionId);
     prompt = input.prompt;
+    recentStartTimestamps.push(now);
   }
 
   const controller = new AbortController();
