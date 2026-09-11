@@ -1,6 +1,6 @@
 import { runCinestudioPipeline } from './run-graph';
 import { loadConfig } from '@/src/db/configs';
-import { createRun, getRun } from '@/src/db/runs';
+import { createRun, getRun, updateRun } from '@/src/db/runs';
 import { ProviderNotConfiguredError, RunCancelledError } from '@/src/lib/errors';
 import { logger, setCurrentRunId, clearCurrentRunId } from '@/src/lib/logger';
 
@@ -67,7 +67,16 @@ export function startRun(input: StartRunInput): StartRunResult {
       log.info('run_aborted', { runId });
       return;
     }
-    log.error('run_crashed', { runId, err: String(err) });
+    const message = err instanceof Error ? err.message : String(err);
+    log.error('run_crashed', { runId, err: message });
+    try {
+      updateRun(runId, { status: 'failed', last_error: message });
+    } catch (persistErr) {
+      log.error('run_crash_persist_failed', {
+        runId,
+        err: persistErr instanceof Error ? persistErr.message : String(persistErr),
+      });
+    }
   });
 
   inflight.set(runId, promise);
