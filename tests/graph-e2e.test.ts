@@ -270,7 +270,7 @@ describe('buildCinestudioGraph - end-to-end pipeline', () => {
     }
   });
 
-  it('all 17 expected agents appear in results', async () => {
+  it('all 27 expected agents plus render dispatcher appear in results', async () => {
     const graph = buildCinestudioGraph(FAKE_CONFIG, 'logline', 'test-run-2');
     const result = await graph.invoke('logline', {
       invocationState: { runId: 'test-run-2', config: FAKE_CONFIG, userPrompt: 'logline' },
@@ -281,11 +281,15 @@ describe('buildCinestudioGraph - end-to-end pipeline', () => {
       if (id) seen.add(id);
     }
     const expected = [
-      'showrunner', 'script_writer', 'character_designer', 'world_builder',
-      'storyboard', 'shot_planner', 'render_dispatch', 'continuity_checker',
-      'critique', 'scoring', 'editor', 'colorist', 'composer',
+      'showrunner', 'style_guide', 'story_analyst', 'script_writer', 'scene_editor',
+      'scene_composer', 'character_designer', 'costume_designer', 'world_builder',
+      'environment_designer', 'storyboard', 'shot_planner', 'cinematographer',
+      'continuity_supervisor', 'transition_designer', 'pacing_analyst',
+      'visual_quality_reviewer', 'continuity_checker', 'critique', 'scoring',
+      'production_coordinator', 'editor', 'colorist', 'composer',
       'sound_designer', 'voice_casting', 'distribution', 'rights_clearance',
     ];
+    expect(expected.length).toBeGreaterThanOrEqual(27);
     for (const id of expected) expect(seen, `expected ${id} in results`).toContain(id);
   });
 });

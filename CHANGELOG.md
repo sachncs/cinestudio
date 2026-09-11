@@ -16,7 +16,7 @@ have been removed. See the migration notes below.
 ### Added
 
 - **Next.js 16** web app (App Router, React 19, Server Actions)
-- **17-agent Strands Graph** orchestrated pipeline
+- **27-agent Strands Graph** orchestrated pipeline
   - Showrunner, Script Writer, Character Designer, World Builder, Storyboard,
     Shot Planner, Render Dispatcher, Continuity Checker, Critic, Iteration
     Controller, Scorer, Editor, Colorist, Composer, Sound Designer, Voice Casting,
