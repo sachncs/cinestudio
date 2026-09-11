@@ -89,3 +89,24 @@ jobs:
         env:
           CINESTUDIO_DATA_DIR: ./data
           CINESTUDIO_ARTIFACT_DIR: ./artifacts
+
+  e2e:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+        with:
+          version: 9
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 26
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        run: pnpm exec playwright install --with-deps chromium
+      - name: Run Playwright e2e suite
+        run: pnpm exec playwright test
+        env:
+          CINESTUDIO_SECRET: ci-secret-32bytes-or-more-please
+          CI: 'true'
