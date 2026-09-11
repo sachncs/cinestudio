@@ -5,7 +5,7 @@
 [![Version](https://img.shields.io/badge/version-0.1.0-black)](CHANGELOG.md)
 [![Node](https://img.shields.io/badge/node-%E2%89%A526-339933)](https://nodejs.org)
 
-Generate a 30-second to 20-minute film from a single prompt — brief, script, storyboard, render, score, color, distribution — coordinated by a 20-agent production crew.
+Generate a 30-second to 20-minute film from a single prompt — brief, script, storyboard, render, score, color, distribution — coordinated by a 27-agent Graph plus a parallel render dispatcher and a production-scoped Copilot.
 
 **Default backend:** MiniMax (text, video, image, speech, music in one key). See [docs/CONFIGURATION.md](docs/CONFIGURATION.md) for the full provider catalogue.
 

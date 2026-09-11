@@ -2,7 +2,7 @@
   "name": "cinestudio",
   "version": "0.1.0",
   "private": true,
-  "description": "Multi-agent AI film rendering platform. Coordinates 16 specialized agents (showrunner, script, character, world, storyboard, render, editor, colorist, composer, ...) to generate 30-second to 20-minute films via Strands Agents Graph + parallel render Workflow.",
+  "description": "Multi-agent AI film rendering platform. Coordinates 27 specialized Graph agents + render dispatcher + copilot to generate 30-second to 20-minute films via Strands Agents Graph + parallel render Workflow.",
   "type": "module",
   "engines": {
     "node": ">=26.0.0"

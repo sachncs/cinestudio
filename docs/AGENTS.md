@@ -1,6 +1,6 @@
 # Agents
 
-22 agents + 1 swarm orchestrator + 1 workflow orchestrator + 1 copilot.
+27 Graph agents + 1 render dispatcher + 1 copilot (29 specialized agents total).
 
 ## Graph agents (deterministic DAG)
 
