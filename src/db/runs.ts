@@ -22,6 +22,7 @@ export interface RunRow {
   completed_at: string | null;
   artifacts_json: string;
   production_id: string | null;
+  last_error: string | null;
 }
 
 export function createRun(prompt: string, productionId?: string | null): string {

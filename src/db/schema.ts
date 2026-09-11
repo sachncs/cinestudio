@@ -23,7 +23,8 @@ export const SCHEMA_DDL: string[] = [
     updated_at TEXT NOT NULL,
     completed_at TEXT,
     artifacts_json TEXT NOT NULL DEFAULT '[]',
-    production_id TEXT
+    production_id TEXT,
+    last_error TEXT
   )`,
   `CREATE TABLE IF NOT EXISTS run_artifacts (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
