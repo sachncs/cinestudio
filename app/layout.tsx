@@ -12,13 +12,32 @@ export const metadata: Metadata = {
     default: 'cinestudio',
     template: '%s · cinestudio',
   },
-  description: 'Multi-agent AI film rendering platform. 30-second to 20-minute films coordinated by Strands Graph.',
+  description:
+    'Multi-agent AI film rendering platform. Generate 30-second to 20-minute films from a single prompt, coordinated by 27 specialised agents.',
+  icons: {
+    icon: [{ url: '/favicon.ico' }, { url: '/favicon-32.png', type: 'image/png' }],
+    apple: [{ url: '/apple-touch-icon.png', type: 'image/png' }],
+  },
+  openGraph: {
+    type: 'website',
+    title: 'cinestudio — Multi-agent AI film rendering platform',
+    description:
+      'Generate 30-second to 20-minute films from a single prompt, coordinated by 27 specialised agents.',
+    images: [{ url: '/og.png', width: 1280, height: 640, alt: 'cinestudio' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'cinestudio — Multi-agent AI film rendering platform',
+    description:
+      'Generate 30-second to 20-minute films from a single prompt, coordinated by 27 specialised agents.',
+    images: ['/og.png'],
+  },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: light)', color: '#f6f1e7' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0e12' },
   ],
 };
 
