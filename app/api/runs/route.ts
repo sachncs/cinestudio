@@ -1,5 +1,9 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { startRun } from '@/src/orchestrator/run';
+import {
+  startRun,
+  ConcurrencyCapExceededError,
+  RunRateLimitExceededError,
+} from '@/src/orchestrator/run';
 import { listRuns, getRun, updateRun } from '@/src/db/runs';
 import { getSelectedIdeaVariant } from '@/src/db/idea-variants';
 import { CreateRunRequestSchema } from '@/src/lib/validation';
@@ -65,18 +69,39 @@ export async function POST(request: NextRequest) {
           title: variant.brief?.logline?.slice(0, 80),
         });
       }
-      const result = startRun({ runIdForResume: body.runId, productionId: body.productionId ?? existing.production_id ?? '' });
-      return NextResponse.json(result, { status: 202 });
+      try {
+        const result = startRun({ runIdForResume: body.runId, productionId: body.productionId ?? existing.production_id ?? '' });
+        return NextResponse.json(result, { status: 202 });
+      } catch (err) {
+        return mapStartError(err);
+      }
     }
 
     if (!body.prompt) {
       return NextResponse.json({ error: 'prompt required' }, { status: 400 });
     }
-    const result = startRun({ prompt: body.prompt, productionId: body.productionId ?? '' });
-    log.info('run_started_legacy', { promptLength: body.prompt.length });
-    return NextResponse.json(result, { status: 202 });
+    try {
+      const result = startRun({ prompt: body.prompt, productionId: body.productionId ?? '' });
+      log.info('run_started_legacy', { promptLength: body.prompt.length });
+      return NextResponse.json(result, { status: 202 });
+    } catch (err) {
+      return mapStartError(err);
+    }
   } catch (err) {
     log.error('run_start_failed', { err: String(err) });
     return NextResponse.json({ error: String(err) }, { status: 400 });
   }
+}
+
+function mapStartError(err: unknown): NextResponse {
+  if (err instanceof RunRateLimitExceededError) {
+    return NextResponse.json(
+      { error: err.message, retryAfterSeconds: err.retryAfterSeconds },
+      { status: 429, headers: { 'Retry-After': String(err.retryAfterSeconds) } },
+    );
+  }
+  if (err instanceof ConcurrencyCapExceededError) {
+    return NextResponse.json({ error: err.message, cap: err.cap }, { status: 429 });
+  }
+  return NextResponse.json({ error: String(err) }, { status: 400 });
 }
