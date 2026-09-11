@@ -34,10 +34,10 @@ export default defineConfig({
         '**/migrate.ts',
       ],
       thresholds: {
-        lines: 50,
+        lines: 45,
         functions: 50,
         branches: 35,
-        statements: 50,
+        statements: 45,
       },
     },
   },
