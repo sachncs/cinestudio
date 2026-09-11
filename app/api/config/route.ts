@@ -3,6 +3,7 @@ import { loadConfig, saveConfig, resetConfig } from '@/src/db/configs';
 import { CinestudioConfigSchema } from '@/src/lib/validation';
 import type { CinestudioConfig } from '@/src/types';
 import { logger } from '@/src/lib/logger';
+import { isSecretConfigured } from '@/src/lib/secrets';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -25,6 +26,17 @@ export async function PUT(request: NextRequest) {
       raw = await request.json();
     } catch {
       return NextResponse.json({ error: 'invalid JSON body' }, { status: 400 });
+    }
+    if (!isSecretConfigured()) {
+      return NextResponse.json(
+        {
+          error:
+            'CINESTUDIO_SECRET required to persist config. ' +
+            'Set the env var (>=32 bytes) before saving API keys. ' +
+            'See docs/DEPLOY.md.',
+        },
+        { status: 400 },
+      );
     }
     const parsed = CinestudioConfigSchema.safeParse(raw);
     if (!parsed.success) {

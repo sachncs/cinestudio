@@ -22,7 +22,7 @@ function deriveKey(): Buffer {
 
 export function isSecretConfigured(): boolean {
   const s = process.env.CINESTUDIO_SECRET;
-  return typeof s === 'string' && s.length >= 16;
+  return typeof s === 'string' && s.length >= 32;
 }
 
 export function encryptSecret(plaintext: string): string {
