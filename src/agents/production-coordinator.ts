@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { invokeStructuredAgent } from './invoke';
+import { listAgentStatesForRun } from '@/src/db/agent-state';
 import type { TextProviderConfig } from '@/src/types';
 
 export const PRODUCTION_COORDINATOR_SYSTEM_PROMPT = `You are the Production Coordinator. You track unresolved dependencies between agents.
@@ -30,14 +31,32 @@ export interface CoordinatorInput {
 export async function invokeProductionCoordinator(
   cfg: TextProviderConfig,
   input: CoordinatorInput,
+  runId?: string,
 ): Promise<CoordinatorReport> {
+  const statuses = runId ? collectStatuses(runId, input.agentStatuses) : input.agentStatuses;
   const { output } = await invokeStructuredAgent<CoordinatorReport>({
     agentId: 'production_coordinator',
     cfg: { ...cfg, temperature: 0.3 },
     systemPrompt: PRODUCTION_COORDINATOR_SYSTEM_PROMPT,
-    userPrompt: JSON.stringify(input, null, 2),
+    userPrompt: JSON.stringify({ ...input, agentStatuses: statuses }, null, 2),
     schema: CoordinatorReportSchema,
     temperature: 0.3,
   });
   return output;
+}
+
+function collectStatuses(
+  runId: string,
+  fallback: CoordinatorInput['agentStatuses'],
+): CoordinatorInput['agentStatuses'] {
+  try {
+    const rows = listAgentStatesForRun(runId);
+    if (rows.length === 0) return fallback;
+    return rows.map((r) => ({
+      agentId: r.agentId,
+      status: r.state === 'done' ? 'done' : r.state === 'failed' ? 'failed' : r.state === 'running' ? 'running' : 'pending',
+    }));
+  } catch {
+    return fallback;
+  }
 }
