@@ -1,11 +1,12 @@
 ---
 layout: default
 title: cinestudio
-description: "cinestudio is a state-of-the-art, multi-agent AI framework designed to automate the entire advertising lifecycle."
+description: Multi-agent AI film rendering platform. 27 specialised agents coordinate a 30-second to 20-minute film from a single prompt.
 ---
+
 # cinestudio
 
-cinestudio is a state-of-the-art, multi-agent AI framework designed to automate the entire advertising lifecycle.
+Multi-agent AI film rendering platform. Generate a 30-second to 20-minute film — brief, script, storyboard, render, score, color, distribution — coordinated by 27 specialised Graph agents.
 
 ## Source
 
