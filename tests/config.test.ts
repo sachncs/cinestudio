@@ -32,7 +32,7 @@ describe('CinestudioConfig persistence', () => {
     };
     saveConfig(updated);
     const reset = resetConfig();
-    expect(reset.textProvider.provider).toBe('bedrock');
+    expect(reset.textProvider.provider).toBe(DEFAULT_CONFIG.textProvider.provider);
     expect(reset.textProvider.model).toBe(DEFAULT_CONFIG.textProvider.model);
   });
 

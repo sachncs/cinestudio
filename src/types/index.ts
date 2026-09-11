@@ -60,9 +60,8 @@ export const DEFAULT_CONFIG: CinestudioConfig = {
   version: '0.1.0',
   textProvider: {
     enabled: false,
-    provider: 'bedrock',
-    model: 'global.anthropic.claude-sonnet-4-6',
-    region: 'us-east-1',
+    provider: 'minimax',
+    model: 'MiniMax-M3',
     temperature: 0.7,
     maxTokens: 8192,
   },
