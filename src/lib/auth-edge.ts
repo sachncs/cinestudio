@@ -19,7 +19,14 @@ export function edgeCheckRequest(request: Request): boolean {
   const cookieHeader = request.headers.get('cookie') ?? '';
   for (const part of cookieHeader.split(';')) {
     const [k, v] = part.trim().split('=');
-    if (k === COOKIE_NAME && v && decodeURIComponent(v) === t) return true;
+    if (k === COOKIE_NAME && v) {
+      const raw = decodeURIComponent(v);
+      const dot = raw.lastIndexOf('.');
+      if (dot < 0) continue;
+      const token = raw.slice(0, dot);
+      const sessionId = raw.slice(dot + 1);
+      if (token === t && sessionId.length > 0) return true;
+    }
   }
   const auth = request.headers.get(TOKEN_HEADER) ?? '';
   if (auth.startsWith('Bearer ') && auth.slice('Bearer '.length) === t) return true;

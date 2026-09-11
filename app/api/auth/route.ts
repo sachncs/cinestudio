@@ -1,9 +1,26 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { checkToken, buildCookieHeader, buildLogoutCookieHeader, getToken, isAuthEnabled } from '@/src/lib/auth';
+import {
+  buildCookieHeader,
+  buildLogoutCookieHeader,
+  checkToken,
+  getToken,
+  isAuthEnabled,
+  issueSession,
+  logoutSession,
+} from '@/src/lib/auth';
 import { LoginRequestSchema } from '@/src/lib/validation';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
+
+function readCookie(request: NextRequest): string | undefined {
+  const raw = request.headers.get('cookie') ?? '';
+  for (const part of raw.split(';')) {
+    const [k, v] = part.trim().split('=');
+    if (k === 'cinestudio_session' && v) return decodeURIComponent(v);
+  }
+  return undefined;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -23,15 +40,18 @@ export async function POST(request: NextRequest) {
     if (!checkToken(parsed.data.token)) {
       return NextResponse.json({ error: 'invalid token' }, { status: 401 });
     }
+    const userAgent = request.headers.get('user-agent');
+    const cookieValue = issueSession(getToken() ?? '', userAgent);
     const response = NextResponse.json({ ok: true });
-    response.headers.append('set-cookie', buildCookieHeader(getToken() ?? ''));
+    response.headers.append('set-cookie', buildCookieHeader(cookieValue));
     return response;
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
 
-export async function DELETE() {
+export async function DELETE(request: NextRequest) {
+  logoutSession(readCookie(request));
   const response = NextResponse.json({ ok: true });
   response.headers.append('set-cookie', buildLogoutCookieHeader());
   return response;
