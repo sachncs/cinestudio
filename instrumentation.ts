@@ -22,7 +22,9 @@ export async function register(): Promise<void> {
       log.warn('db_close_failed', { err: String(err) });
     }
     log.info('shutdown_complete', { signal });
-    setTimeout(() => process.exit(0), 100).unref();
+    if (process.env.CINESTUDIO_FORCE_EXIT === '1') {
+      setTimeout(() => process.exit(0), 100).unref();
+    }
   };
 
   process.on('SIGTERM', () => shutdown('SIGTERM'));
