@@ -6,7 +6,7 @@ Fixes # (issue number, if applicable)
 
 ## Changes
 
-- 
+-
 
 ## Motivation
 
@@ -17,10 +17,10 @@ Why is this change needed? What problem does it solve?
 Describe the tests you ran to verify your changes:
 
 ```bash
-# Example:
-pytest tests/ -v --cov=ads_ai
-ruff check ads_ai/ tests/
-mypy ads_ai/ tests/
+pnpm typecheck
+pnpm lint
+pnpm test
+pnpm build
 ```
 
 ## Screenshots / Output

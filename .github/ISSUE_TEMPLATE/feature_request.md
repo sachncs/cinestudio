@@ -24,7 +24,7 @@ Describe a concrete scenario where this feature would be useful.
 
 ## Additional Context
 
-- Does this align with the project's goal of multi-agent advertising automation?
+- Does this align with the project's goal of multi-agent film rendering?
 - Are there any privacy or security considerations?
 - Estimated complexity: [ ] Low [ ] Medium [ ] High
 
