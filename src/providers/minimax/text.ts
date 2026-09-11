@@ -1,5 +1,6 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { logger } from '@/src/lib/logger';
+import { MINIMAX_ANTHROPIC_BASE_URL } from './constants';
 
 const log = logger('providers/minimax/text');
 
@@ -32,7 +33,7 @@ export async function invokeMiniMaxAnthropic(
 ): Promise<MiniMaxAnthropicInvokeOutput> {
   const client = new Anthropic({
     apiKey: cfg.apiKey,
-    baseURL: cfg.baseUrl ?? 'https://api.minimax.io/anthropic',
+    baseURL: cfg.baseUrl ?? MINIMAX_ANTHROPIC_BASE_URL,
     timeout: 30 * 60 * 1000,
     maxRetries: 0,
   });

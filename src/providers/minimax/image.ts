@@ -6,6 +6,7 @@ import { Readable } from 'node:stream';
 import type { ReadableStream as WebReadableStream } from 'node:stream/web';
 import { logger } from '@/src/lib/logger';
 import { authHeaders, miniMaxFetch, MiniMaxError } from './shared';
+import { MINIMAX_BASE_URL, MINIMAX_IMAGE_MODEL } from './constants';
 
 const log = logger('providers/minimax/image');
 
@@ -34,8 +35,8 @@ export async function generateWithMiniMaxImage(
   cfg: MiniMaxImageConfig,
   input: MiniMaxImageInput,
 ): Promise<MiniMaxImageResult> {
-  const baseUrl = (cfg.baseUrl ?? 'https://api.minimax.io').replace(/\/+$/, '');
-  const model = cfg.model ?? 'image-01';
+  const baseUrl = (cfg.baseUrl ?? MINIMAX_BASE_URL).replace(/\/+$/, '');
+  const model = cfg.model ?? MINIMAX_IMAGE_MODEL;
 
   try {
     log.info('minimax_image_invoking', { artifactId: input.artifactId, model });

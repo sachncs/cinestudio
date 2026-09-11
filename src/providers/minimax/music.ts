@@ -2,6 +2,7 @@ import path from 'node:path';
 import { mkdir, stat, writeFile } from 'node:fs/promises';
 import { logger } from '@/src/lib/logger';
 import { authHeaders, miniMaxFetch, MiniMaxError, readNumberField, readStringField } from './shared';
+import { MINIMAX_BASE_URL, MINIMAX_MUSIC_MODEL } from './constants';
 
 const log = logger('providers/minimax/music');
 
@@ -30,8 +31,8 @@ export async function generateWithMiniMaxMusic(
   cfg: MiniMaxMusicConfig,
   input: MiniMaxMusicInput,
 ): Promise<MiniMaxMusicResult> {
-  const baseUrl = (cfg.baseUrl ?? 'https://api.minimax.io').replace(/\/+$/, '');
-  const model = cfg.model ?? 'music-3.0';
+  const baseUrl = (cfg.baseUrl ?? MINIMAX_BASE_URL).replace(/\/+$/, '');
+  const model = cfg.model ?? MINIMAX_MUSIC_MODEL;
   try {
     log.info('minimax_music_invoking', { artifactId: input.artifactId, model, instrumental: input.instrumental ?? false });
     const body: Record<string, unknown> = {

@@ -1,3 +1,10 @@
+import {
+  MINIMAX_IMAGE_MODEL,
+  MINIMAX_MUSIC_MODEL,
+  MINIMAX_SPEECH_MODEL,
+  MINIMAX_VIDEO_MODEL,
+} from '@/src/providers/minimax/constants';
+
 export type RenderProvider = 'veo' | 'sora' | 'runway' | 'minimax';
 
 export interface RenderProviderConfig {
@@ -77,7 +84,7 @@ export const DEFAULT_CONFIG: CinestudioConfig = {
     },
     minimax: {
       enabled: true,
-      model: 'MiniMax-H3',
+      model: MINIMAX_VIDEO_MODEL,
       maxConcurrentShots: 4,
     },
   },
@@ -85,17 +92,17 @@ export const DEFAULT_CONFIG: CinestudioConfig = {
     image: {
       enabled: true,
       provider: 'minimax',
-      model: 'image-01',
+      model: MINIMAX_IMAGE_MODEL,
     },
     speech: {
       enabled: true,
       provider: 'minimax',
-      model: 'speech-2.8-hd',
+      model: MINIMAX_SPEECH_MODEL,
     },
     music: {
       enabled: true,
       provider: 'minimax',
-      model: 'music-3.0',
+      model: MINIMAX_MUSIC_MODEL,
     },
   },
   defaults: {

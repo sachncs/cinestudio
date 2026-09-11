@@ -1,9 +1,10 @@
 import { logger } from '@/src/lib/logger';
 import { MiniMaxError, readStringField } from './shared';
+import { MINIMAX_BASE_URL } from './constants';
 
 const log = logger('providers/minimax/files');
 
-const DEFAULT_BASE_URL = 'https://api.minimax.io';
+const DEFAULT_BASE_URL = MINIMAX_BASE_URL;
 
 export interface MiniMaxFileConfig {
   apiKey: string;

@@ -4,6 +4,7 @@ import { resolveAndAssertSafe, SSRFBlockedError } from '@/src/lib/ssrf';
 import { ConfigTestRequestSchema, CinestudioConfigSchema } from '@/src/lib/validation';
 import type { CinestudioConfig } from '@/src/types';
 import { logger } from '@/src/lib/logger';
+import { MINIMAX_BASE_URL } from '@/src/providers/minimax/constants';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -25,7 +26,7 @@ async function testOne(
   try {
     switch (p.provider) {
       case 'minimax': {
-        const url = await resolveAndAssertSafe(p.baseUrl ?? 'https://api.minimax.io', { allowHttp });
+        const url = await resolveAndAssertSafe(p.baseUrl ?? MINIMAX_BASE_URL, { allowHttp });
         const base = url.toString().replace(/\/+$/, '');
         const r = await fetch(`${base}/v1/models`, {
           headers: { Authorization: `Bearer ${p.apiKey ?? ''}` },

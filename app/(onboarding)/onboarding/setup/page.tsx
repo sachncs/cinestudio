@@ -13,6 +13,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import type { CinestudioConfig } from '@/src/types';
+import {
+  MINIMAX_ANTHROPIC_BASE_URL,
+  MINIMAX_IMAGE_MODEL,
+  MINIMAX_MUSIC_MODEL,
+  MINIMAX_SPEECH_MODEL,
+  MINIMAX_TEXT_MODEL,
+  MINIMAX_VIDEO_MODEL,
+} from '@/src/providers/minimax/constants';
 
 interface ProviderPreset {
   id: 'bedrock' | 'anthropic' | 'openai' | 'google' | 'ollama' | 'minimax';
@@ -27,24 +35,24 @@ const PROVIDER_PRESETS: ProviderPreset[] = [
   {
     id: 'minimax',
     label: 'MiniMax',
-    model: 'MiniMax-M3',
+    model: MINIMAX_TEXT_MODEL,
     needsApiKey: true,
-    defaultBaseUrl: 'https://api.minimax.io/anthropic',
-    hint: 'One MiniMax API key covers text, video (MiniMax-H3), image (image-01), speech (speech-2.8-hd), and music (music-3.0).',
+    defaultBaseUrl: MINIMAX_ANTHROPIC_BASE_URL,
+    hint: `One MiniMax API key covers text, video (${MINIMAX_VIDEO_MODEL}), image (${MINIMAX_IMAGE_MODEL}), speech (${MINIMAX_SPEECH_MODEL}), and music (${MINIMAX_MUSIC_MODEL}).`,
   },
 ];
 
 const MULTIMODAL_DEFAULT_MODELS: Record<'image' | 'speech' | 'music', string> = {
-  image: 'image-01',
-  speech: 'speech-2.8-hd',
-  music: 'music-3.0',
+  image: MINIMAX_IMAGE_MODEL,
+  speech: MINIMAX_SPEECH_MODEL,
+  music: MINIMAX_MUSIC_MODEL,
 };
 
 const RENDER_DEFAULT_MODELS: Record<'veo' | 'sora' | 'runway' | 'minimax', string> = {
   veo: 'veo-3.1',
   sora: 'sora-2',
   runway: 'gen3a_turbo',
-  minimax: 'MiniMax-H3',
+  minimax: MINIMAX_VIDEO_MODEL,
 };
 
 interface TestResult { provider: string; ok: boolean; latencyMs: number; error?: string }
@@ -59,13 +67,13 @@ export default function OnboardingSetup() {
   const [apiKey, setApiKey] = useState('');
   const [baseUrl, setBaseUrl] = useState('');
   const [region, setRegion] = useState('us-east-1');
-  const [model, setModel] = useState('MiniMax-M3');
+  const [model, setModel] = useState(MINIMAX_TEXT_MODEL);
 
   const [renderProviders, setRenderProviders] = useState<Record<'veo' | 'sora' | 'runway' | 'minimax', { enabled: boolean; apiKey: string; baseUrl: string; model: string }>>({
     veo: { enabled: false, apiKey: '', baseUrl: '', model: 'veo-3.1' },
     sora: { enabled: false, apiKey: '', baseUrl: '', model: 'sora-2' },
     runway: { enabled: false, apiKey: '', baseUrl: '', model: 'gen3a_turbo' },
-    minimax: { enabled: true, apiKey: '', baseUrl: '', model: 'MiniMax-H3' },
+    minimax: { enabled: true, apiKey: '', baseUrl: '', model: MINIMAX_VIDEO_MODEL },
   });
   const [imageEnabled, setImageEnabled] = useState(true);
   const [speechEnabled, setSpeechEnabled] = useState(true);
@@ -125,7 +133,7 @@ export default function OnboardingSetup() {
         });
       }
       if (imageEnabled && imageKey) {
-        providers.push({ provider: 'minimax', apiKey: imageKey, model: 'image-01' });
+        providers.push({ provider: 'minimax', apiKey: imageKey, model: MINIMAX_IMAGE_MODEL });
       }
 
       const res = await fetch('/api/config/test', {
@@ -275,7 +283,7 @@ export default function OnboardingSetup() {
               <div key={key} className="rounded-md border p-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="font-medium capitalize">{key === 'minimax' ? 'MiniMax-H3' : key}</span>
+                    <span className="font-medium capitalize">{key === 'minimax' ? `MiniMax (${MINIMAX_VIDEO_MODEL})` : key}</span>
                     <Badge variant="outline">{rp.model}</Badge>
                     {key === 'minimax' && (
                       <Badge variant="secondary" className="text-[10px]">recommended</Badge>
