@@ -2,8 +2,16 @@ import { z } from 'zod';
 import type { TextProviderConfig } from '@/src/types';
 import { invokeMiniMaxAnthropic } from '@/src/providers/minimax/text';
 import { logger } from '@/src/lib/logger';
+import { isProviderImplemented } from '@/src/providers/registry';
 
 const log = logger('agents/invoke');
+
+export class ProviderNotImplementedError extends Error {
+  constructor(public readonly provider: string) {
+    super(`Text provider '${provider}' is not implemented at runtime`);
+    this.name = 'ProviderNotImplementedError';
+  }
+}
 
 export interface InvokeOptions {
   agentId: string;
@@ -106,7 +114,7 @@ function coerce(value: unknown, enums: EnumIndex[], path: string[]): unknown {
 export async function invokeStructuredAgent<T>(
   opts: InvokeOptions,
 ): Promise<InvokeResult<T>> {
-  log.info('agent_invoking', { agentId: opts.agentId });
+  log.info('agent_invoking', { agentId: opts.agentId, provider: opts.cfg.provider });
   const tool = {
     name: 'submit_response',
     description: `Submit the ${opts.agentId} structured response conforming to the schema.`,
@@ -114,20 +122,7 @@ export async function invokeStructuredAgent<T>(
   };
   const enums = collectEnums(opts.schema);
 
-  const result = await invokeMiniMaxAnthropic(
-    {
-      apiKey: opts.cfg.apiKey ?? '',
-      model: opts.cfg.model,
-      baseUrl: opts.cfg.baseUrl,
-      temperature: opts.temperature ?? opts.cfg.temperature ?? 0.7,
-      maxTokens: opts.cfg.maxTokens ?? 16384,
-    },
-    {
-      system: opts.systemPrompt,
-      messages: [{ role: 'user', content: opts.userPrompt }],
-      tools: [tool],
-    },
-  );
+  const result = await dispatchInvoke(opts);
 
   const raw = result.raw as { content?: Array<{ type: string; name?: string; input?: unknown }> };
   const toolUse = raw.content?.find((b) => b.type === 'tool_use' && b.name === 'submit_response') as
@@ -165,4 +160,32 @@ export async function invokeStructuredAgent<T>(
   }
 
   return { output: parsed, text: result.text, raw: result.raw };
+}
+
+async function dispatchInvoke(
+  opts: InvokeOptions,
+): Promise<Awaited<ReturnType<typeof invokeMiniMaxAnthropic>>> {
+  if (opts.cfg.provider === 'minimax' || !isProviderImplemented(opts.cfg.provider)) {
+    return invokeMiniMaxAnthropic(
+      {
+        apiKey: opts.cfg.apiKey ?? '',
+        model: opts.cfg.model,
+        baseUrl: opts.cfg.baseUrl,
+        temperature: opts.temperature ?? opts.cfg.temperature ?? 0.7,
+        maxTokens: opts.cfg.maxTokens ?? 16384,
+      },
+      {
+        system: opts.systemPrompt,
+        messages: [{ role: 'user', content: opts.userPrompt }],
+        tools: [
+          {
+            name: 'submit_response',
+            description: `Submit the ${opts.agentId} structured response conforming to the schema.`,
+            input_schema: schemaToOpenApi(opts.schema),
+          },
+        ],
+      },
+    );
+  }
+  throw new ProviderNotImplementedError(opts.cfg.provider);
 }

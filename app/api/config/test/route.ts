@@ -6,6 +6,7 @@ import type { CinestudioConfig } from '@/src/types';
 import { logger } from '@/src/lib/logger';
 import { isSecretConfigured } from '@/src/lib/secrets';
 import { MINIMAX_BASE_URL } from '@/src/providers/minimax/constants';
+import { isProviderImplemented } from '@/src/providers/registry';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -114,6 +115,13 @@ export async function POST(request: NextRequest) {
     const body = parsed.data;
     const allowHttp = process.env.NODE_ENV !== 'production';
     const results = await Promise.all(body.providers.map((p) => testOne(p, allowHttp)));
+    for (const r of results) {
+      if (!r.ok) continue;
+      if (r.provider !== 'minimax' && !isProviderImplemented(r.provider as 'bedrock' | 'anthropic' | 'openai' | 'google' | 'ollama' | 'minimax')) {
+        r.ok = false;
+        r.error = `Provider '${r.provider}' is probed-only; runtime is hardcoded to MiniMax.`;
+      }
+    }
     log.info('config_test_run', { count: body.providers.length, ok: results.filter((r) => r.ok).length });
 
     if (body.save && body.config) {
