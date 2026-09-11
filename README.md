@@ -17,7 +17,7 @@ Every story is a **Production** — the central object. Characters, Wardrobe, Lo
 
 ```bash
 pnpm install
-pnpm db:migrate    # applies the base schema (productions, characters, locations, scenes, shots, transitions, continuity_log, knowledge, knowledge_fts, assets, asset_tags, asset_collections, asset_collection_items, comments, versions, copilot_threads, copilot_messages, team_members, invites, acl)
+pnpm db:migrate    # applies the base schema (productions, characters, locations, scenes, shots, transitions, continuity_log, knowledge, knowledge_fts, assets, asset_tags, asset_collections, asset_collection_items, comments, versions, copilot_threads, copilot_messages, team_members, invites, acl) via SCHEMA_DDL; the numbered migration list is reserved for post-v0.1.0 forward changes
 pnpm dev           # http://localhost:3000
 ```
 
