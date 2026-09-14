@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>cinestudio — Not in the cut</title>
+    <meta name="description" content="The page you're looking for has been cut from this Production." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
+    <style>
+      :root { color-scheme: dark; }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; height: 100%; }
+      body {
+        background: #0a0907;
+        color: #f3ecdf;
+        font-family: Inter, system-ui, -apple-system, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        background-image:
+          radial-gradient(900px 500px at 20% -10%, rgba(184,138,31,0.10), transparent 60%),
+          radial-gradient(700px 400px at 80% 110%, rgba(212,175,55,0.06), transparent 60%);
+        display: grid;
+        place-items: center;
+        padding: 1.5rem;
+      }
+      a { color: #d4a830; text-decoration: none; }
+      a:hover { color: #ecd489; }
+      .wrap {
+        max-width: 32rem;
+        text-align: center;
+        border: 1px solid rgba(212,175,55,0.15);
+        background: rgba(255,255,255,0.015);
+        backdrop-filter: blur(12px);
+        border-radius: 20px;
+        padding: 3rem 2rem;
+      }
+      .eyebrow {
+        font-family: 'JetBrains Mono', ui-monospace, monospace;
+        font-size: 11px;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: #a99e84;
+        margin-bottom: 1rem;
+      }
+      h1 {
+        font-family: 'Playfair Display', Georgia, serif;
+        font-weight: 500;
+        font-size: clamp(2.25rem, 5vw, 3.25rem);
+        line-height: 1.05;
+        margin: 0 0 1rem;
+        color: #fbf8f1;
+      }
+      p { color: #c9bfa8; line-height: 1.6; margin: 0 0 2rem; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.65rem 1.25rem;
+        border-radius: 9999px;
+        background: #fbf8f1;
+        color: #0a0907;
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .btn:hover { background: #fff; }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="eyebrow">404 · Cut from the cut</div>
+      <h1>This scene isn't in the film.</h1>
+      <p>The page you're looking for doesn't exist in this Production. Return to the opening shot and try again.</p>
+      <a class="btn" href="/cinestudio/">Back to cinestudio →</a>
+    </div>
+  </body>
+</html>
